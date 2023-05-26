@@ -1,0 +1,18 @@
+[Oo]bj
+[Bb]in
+*.suo
+*.tss
+/packages/
+*.user
+TestResults/
+*.dat
+.vs/
+nuget/build/payload
+node_modules/
+/public/
+# Temp files from git merges:
+*.orig
+TestResult.xml
+LinuxInstall/package
+#ignore Rider files
+*.idea/ 
