@@ -15,9 +15,9 @@ ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<Package Name="E364x" Version="1.7.0" OS="Windows,Linux" Architecture="AnyCPU" xmlns="http://opentap.io/schemas/package" Group="Keysight Instrument Plugins/Power Supplies">
+<Package Name="E364x Dual Output DC Power Supplies" Version="1.7.0" OS="Windows,Linux" Architecture="AnyCPU" xmlns="http://opentap.io/schemas/package" Group="Keysight Instrument Plugins/Power Supplies">
 <Description>
-E364x Dual Output DC Power Supplies. 
+E364x Dual Output DC Power Supplies - The E364xA power supplies feature a combination of programming capabilities and linear power supply performance that makes them ideal for power systems applications. 
 
 Instrument Firmware Version: 1.7, 
 IDF Revision Number: 3
@@ -26,6 +26,7 @@ IDF Revision Number: 3
 <Hardware>E3645A, E3646A, E3647A, E3648A, E3649A</Hardware>
 </Description>
 <SourceUrl>https://github.com/opentap/Keysight-Instrument-Plugins/</SourceUrl>
+<SourceLicense>MIT</SourceLicense>
 <Owner>Keysight Technologies, Inc.</Owner>
 <Files>
 <File Path="Packages/E364x/E364x.dll" SourcePath="E364x.dll">

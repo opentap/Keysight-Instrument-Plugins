@@ -13,7 +13,7 @@ These plugins make it possible for Keysight Test Automation and OpenTAP users to
 
 **Prerequisites**
 
-- [OpenTAP](https://opentap.io/) or [Keysight Test Automation](https://www.keysight.com/us/en/product/KS8400B/pathwave-test-automation.html)
+- [OpenTAP](https://opentap.io/) or [Keysight Test Automation](https://keysight.com/find/tap)
 - [Keysight IO Libraries Suite](https://www.keysight.com/find/iosuite) (2021 or higher)
 
 **Getting OpenTAP**
