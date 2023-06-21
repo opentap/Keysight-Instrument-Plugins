@@ -40,11 +40,11 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region Common Instrument Commands
     #region E364xCommonCommandCls
-    [Display("CLS", Groups: new[] { "E364x", "Common Commands" }, Description: "Clear all event registers and Status Byte register.")]
+    [Display("*CLS", Groups: new[] { "E364x" }, Description: "Clear all event registers and Status Byte register.")]
     public class E364xCommonCommandCls : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -56,7 +56,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -65,6 +65,13 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandCls()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -79,11 +86,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandEse
-    [Display("ESE", Groups: new[] { "E364x", "Common Commands" }, Description: "Query the Standard Event Enable register.   Enable bits in the Standard Event Enable register.")]
+    [Display("*ESE", Groups: new[] { "E364x" }, Description: "Query the Standard Event Enable register.   Enable bits in the Standard Event Enable register.")]
     public class E364xCommonCommandEse : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -95,45 +102,59 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Display(Group: "Command Parameter ", Name: "enableValue", Description: "The Standard Event Enable register.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _enableValueCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "enableValue", Description: "Returns the current value of the Standard Event Enable register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _enableValueQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandEse()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -142,7 +163,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.CommonCommands.SetEse(_enableValueCP);
 
@@ -153,20 +174,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _enableValueQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                if (publishResults)
+                {
+                    Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -175,11 +199,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandEsr
-    [Display("ESR", Groups: new[] { "E364x", "Common Commands" }, Description: "Query the Standard Event register.")]
+    [Display("*ESR", Groups: new[] { "E364x" }, Description: "Query the Standard Event register.")]
     public class E364xCommonCommandEsr : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -191,41 +215,55 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Output]
         [Display(Group: "Query Response ", Name: "esr", Description: "Returns the current value of the Standard Event register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _esrQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandEsr()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -238,20 +276,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _esrQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("esr", new { Esr = (int)_esrQR });
+            if (publishResults)
+            {
+                Results.Publish("esr", new { Esr = (int)_esrQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -259,11 +300,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandIdn
-    [Display("IDN", Groups: new[] { "E364x", "Common Commands" }, Description: "Read the power supply’s identification string.")]
+    [Display("*IDN", Groups: new[] { "E364x" }, Description: "Read the power supply’s identification string.")]
     public class E364xCommonCommandIdn : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -275,20 +316,27 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Output]
         [Display(Group: "Query Response ", Name: "idn", Description: "The instrument identification string.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _idnQR { get; private set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandIdn()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -303,11 +351,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandOpc
-    [Display("OPC", Groups: new[] { "E364x", "Common Commands" }, Description: "Set the ‘‘Operation Complete’’ bit (bit 0) of the Standard Event register after the command is executed.  Return ‘‘1’’ to the output buffer after the command is executed.")]
+    [Display("*OPC", Groups: new[] { "E364x" }, Description: "Set the ‘‘Operation Complete’’ bit (bit 0) of the Standard Event register after the command is executed.  Return ‘‘1’’ to the output buffer after the command is executed.")]
     public class E364xCommonCommandOpc : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -319,41 +367,55 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Output]
         [Display(Group: "Query Response ", Name: "opc", Description: "Return ‘‘1’’ to the output buffer after the command is executed.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _opcQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandOpc()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -362,7 +424,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.CommonCommands.SetOpc();
 
@@ -373,20 +435,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _opcQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("opc", new { Opc = (int)_opcQR });
+                if (publishResults)
+                {
+                    Results.Publish("opc", new { Opc = (int)_opcQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -395,11 +460,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandPsc
-    [Display("PSC", Groups: new[] { "E364x", "Common Commands" }, Description: "This command clears the Status Byte and the Standard Event register enable masks when power is turned on (*PSC 1).   Query the power-on status clear setting.")]
+    [Display("*PSC", Groups: new[] { "E364x" }, Description: "This command clears the Status Byte and the Standard Event register enable masks when power is turned on (*PSC 1).   Query the power-on status clear setting.")]
     public class E364xCommonCommandPsc : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -411,45 +476,59 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Display(Group: "Command Parameter ", Name: "psc", Description: "the Power-on status clear.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _pscCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "psc", Description: "Returns the current the power-on status clear setting.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _pscQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandPsc()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -458,7 +537,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.CommonCommands.SetPsc(_pscCP);
 
@@ -469,20 +548,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _pscQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("psc", new { Psc = (int)_pscQR });
+                if (publishResults)
+                {
+                    Results.Publish("psc", new { Psc = (int)_pscQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -491,11 +573,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandRcl
-    [Display("RCL", Groups: new[] { "E364x", "Common Commands" }, Description: "Recall the power supply state stored in the specified storage location.")]
+    [Display("*RCL", Groups: new[] { "E364x" }, Description: "Recall the power supply state stored in the specified storage location.")]
     public class E364xCommonCommandRcl : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -507,19 +589,26 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Display(Group: "Command Parameter ", Name: "rcl", Description: "Controls the power supply state stored in the specified storage location.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _rclCP { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandRcl()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -534,11 +623,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandRst
-    [Display("RST", Groups: new[] { "E364x", "Common Commands" }, Description: "Reset the power supply to its power-on state.")]
+    [Display("*RST", Groups: new[] { "E364x" }, Description: "Reset the power supply to its power-on state.")]
     public class E364xCommonCommandRst : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -550,7 +639,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -559,6 +648,13 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandRst()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -573,11 +669,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandSav
-    [Display("SAV", Groups: new[] { "E364x", "Common Commands" }, Description: "Store (Save) the present state of the power supply to the specified location.")]
+    [Display("*SAV", Groups: new[] { "E364x" }, Description: "Store (Save) the present state of the power supply to the specified location.")]
     public class E364xCommonCommandSav : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -589,19 +685,26 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Display(Group: "Command Parameter ", Name: "sav", Description: "Store (Save) the present state of the power supply to the specified location.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _savCP { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandSav()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -616,11 +719,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandSre
-    [Display("SRE", Groups: new[] { "E364x", "Common Commands" }, Description: "Enable bits in the Status Byte enable register.  Query the Status Byte Enable register.")]
+    [Display("*SRE", Groups: new[] { "E364x" }, Description: "Enable bits in the Status Byte enable register.  Query the Status Byte Enable register.")]
     public class E364xCommonCommandSre : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -632,45 +735,59 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Display(Group: "Command Parameter ", Name: "enableValue", Description: "The Status Byte enable register.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _enableValueCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "enableValue", Description: "Returns the current value of the Status Byte enable register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _enableValueQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandSre()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -679,7 +796,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.CommonCommands.SetSre(_enableValueCP);
 
@@ -690,20 +807,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _enableValueQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                if (publishResults)
+                {
+                    Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -712,11 +832,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandStb
-    [Display("STB", Groups: new[] { "E364x", "Common Commands" }, Description: "Query the Status Byte summary register.")]
+    [Display("*STB", Groups: new[] { "E364x" }, Description: "Query the Status Byte summary register.")]
     public class E364xCommonCommandStb : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -728,41 +848,55 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Output]
         [Display(Group: "Query Response ", Name: "stb", Description: "Returns the current value of the Status Byte summary register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _stbQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandStb()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -775,20 +909,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _stbQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("stb", new { Stb = (int)_stbQR });
+            if (publishResults)
+            {
+                Results.Publish("stb", new { Stb = (int)_stbQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -796,11 +933,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandTrg
-    [Display("TRG", Groups: new[] { "E364x", "Common Commands" }, Description: "Generate a trigger to the trigger subsystem that has selected a bus (software) trigger as its source (TRIG:SOUR BUS).")]
+    [Display("*TRG", Groups: new[] { "E364x" }, Description: "Generate a trigger to the trigger subsystem that has selected a bus (software) trigger as its source (TRIG:SOUR BUS).")]
     public class E364xCommonCommandTrg : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -812,7 +949,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -821,6 +958,13 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandTrg()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -835,11 +979,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandTst
-    [Display("TST", Groups: new[] { "E364x", "Common Commands" }, Description: "Perform a complete self-test of the power supply.")]
+    [Display("*TST", Groups: new[] { "E364x" }, Description: "Perform a complete self-test of the power supply.")]
     public class E364xCommonCommandTst : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -851,41 +995,55 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response Properties
         [Output]
         [Display(Group: "Query Response ", Name: "tst", Description: "Returns the complete self-test of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _tstQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandTst()
+        {
+            {
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -898,20 +1056,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _tstQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("tst", new { Tst = (int)_tstQR });
+            if (publishResults)
+            {
+                Results.Publish("tst", new { Tst = (int)_tstQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -919,11 +1080,11 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xCommonCommandWai
-    [Display("WAI", Groups: new[] { "E364x", "Common Commands" }, Description: "Instruct the power supply to wait for all pending operations to complete before executing any additional commands over the interface.")]
+    [Display("*WAI", Groups: new[] { "E364x" }, Description: "Instruct the power supply to wait for all pending operations to complete before executing any additional commands over the interface.")]
     public class E364xCommonCommandWai : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -935,7 +1096,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -944,6 +1105,13 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCommonCommandWai()
+        {
+            {
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -965,7 +1133,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xApplyStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -977,42 +1145,42 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "voltage Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _voltageCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "Voltage.", Order: 30.2)]
         [EnabledIf("_voltageCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public defMinMax _voltageCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "Voltage.", Order: 30.3)]
         [EnabledIf("_voltageCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _voltageCPStr { get; set; }
         [Display(Group: "Command Parameter ", Name: "current Custom Input", Order: 30.4)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _currentCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "Current.", Order: 30.5)]
         [EnabledIf("_currentCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public defMinMax _currentCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "Current.", Order: 30.6)]
         [EnabledIf("_currentCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _currentCPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "apply", Description: "Returns the power supply’s present voltage and current setting values and returns a quoted string.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _applyQR { get; private set; }
         #endregion
@@ -1020,12 +1188,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xApplyStep()
+        {
+            {
+                Name = ":APPLy";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Apply.Set((_voltageCPCustomInput ? _voltageCPStr : _voltageCP.ToString()), (_currentCPCustomInput ? _currentCPStr : _currentCP.ToString()));
 
@@ -1047,7 +1223,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationCountStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1059,41 +1235,56 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "count", Description: "Returns the power supply to determine the number of times it has been calibrated.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _countQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationCountStep()
+        {
+            {
+                Name = "CALibration:COUNt";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1106,20 +1297,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _countQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("count", new { Count = (int)_countQR });
+            if (publishResults)
+            {
+                Results.Publish("count", new { Count = (int)_countQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -1131,7 +1325,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationCurrentDataStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1143,19 +1337,27 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The numeric value.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public double? _numericValueCP { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationCurrentDataStep()
+        {
+            {
+                Name = "CALibration:CURRent:[DATA]";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1174,7 +1376,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationCurrentLevelStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1186,29 +1388,37 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "preset Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _presetCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "preset", Description: "MINimum | MIDdle | MAXimum", Order: 30.2)]
         [EnabledIf("_presetCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMidMax _presetCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "preset", Description: "MINimum | MIDdle | MAXimum", Order: 30.3)]
         [EnabledIf("_presetCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _presetCPStr { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationCurrentLevelStep()
+        {
+            {
+                Name = "CALibration:CURRent:LEVel";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1227,7 +1437,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationSecureCodeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1239,19 +1449,27 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "code", Description: "The new security code.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _codeCP { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationSecureCodeStep()
+        {
+            {
+                Name = "CALibration:SECure:CODE";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1270,7 +1488,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationSecureStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1282,37 +1500,52 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the function.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "quotedCode", Description: "The quoted code.", Order: 30.2)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _quotedCodeCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the function.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationSecureStateStep()
+        {
+            {
+                Name = "CALibration:SECure:STATe";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1321,7 +1554,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Calibration.SetSecureState(_stateCP, _quotedCodeCP);
 
@@ -1332,7 +1565,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -1348,7 +1583,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationStringStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1360,18 +1595,18 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "quotedString", Description: "The calibration information about your power supply.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _quotedStringCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "quotedString", Description: "Returns the current calibration information about your power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _quotedStringQR { get; private set; }
         #endregion
@@ -1379,12 +1614,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xCalibrationStringStep()
+        {
+            {
+                Name = "CALibration:STRing";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Calibration.SetString(_quotedStringCP);
 
@@ -1404,7 +1647,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationVoltageDataStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1416,19 +1659,27 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The numeric value.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public double? _numericValueCP { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationVoltageDataStep()
+        {
+            {
+                Name = "CALibration:VOLTage:[DATA]";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1447,7 +1698,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationVoltageLevelStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1459,29 +1710,37 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "preset Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _presetCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "preset", Description: "MINimum | MIDdle | MAXimum", Order: 30.2)]
         [EnabledIf("_presetCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMidMax _presetCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "preset", Description: "MINimum | MIDdle | MAXimum", Order: 30.3)]
         [EnabledIf("_presetCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _presetCPStr { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationVoltageLevelStep()
+        {
+            {
+                Name = "CALibration:VOLTage:LEVel";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1500,7 +1759,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xCalibrationVoltageProtectionStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1512,7 +1771,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -1521,6 +1780,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xCalibrationVoltageProtectionStep()
+        {
+            {
+                Name = "CALibration:VOLTage:PROTection";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1541,7 +1808,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xDisplayWindowModeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1553,28 +1820,28 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "mode Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _modeCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "mode", Description: "The front-panel display mode of the power supply.", Order: 30.2)]
         [EnabledIf("_modeCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public mode _modeCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "mode", Description: "The front-panel display mode of the power supply.", Order: 30.3)]
         [EnabledIf("_modeCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _modeCPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "mode", Description: "Returns the current front-panel display mode of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public mode _modeQR { get; private set; }
         #endregion
@@ -1582,12 +1849,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xDisplayWindowModeStep()
+        {
+            {
+                Name = "DISPlay:[WINDow]:MODE";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Display.SetWindowMode((_modeCPCustomInput ? _modeCPStr : _modeCP.ToString()));
 
@@ -1607,7 +1882,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xDisplayWindowStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1619,33 +1894,48 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the front-panel display.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the front-panel display.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xDisplayWindowStateStep()
+        {
+            {
+                Name = "DISPlay:[WINDow]:[STATe]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1654,7 +1944,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Display.SetWindowState(_stateCP);
 
@@ -1665,7 +1955,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -1681,7 +1973,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xDisplayWindowTextClearStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1693,7 +1985,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -1702,6 +1994,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xDisplayWindowTextClearStep()
+        {
+            {
+                Name = "DISPlay:[WINDow]:TEXT:CLEar";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1720,7 +2020,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xDisplayWindowTextDataStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1732,18 +2032,18 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "quotedString", Description: "The front panel message.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _quotedStringCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "quotedString", Description: "Returns the front panel message.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _quotedStringQR { get; private set; }
         #endregion
@@ -1751,12 +2051,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xDisplayWindowTextDataStep()
+        {
+            {
+                Name = "DISPlay:[WINDow]:TEXT:[DATA]";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Display.SetWindowTextData(_quotedStringCP);
 
@@ -1778,7 +2086,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xInitiateImmediateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1790,7 +2098,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -1799,6 +2107,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xInitiateImmediateStep()
+        {
+            {
+                Name = "INITiate:[IMMediate]";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1819,7 +2135,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xInstrumentSelectStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1831,28 +2147,28 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "select Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _selectCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "select", Description: "The output identifier.", Order: 30.2)]
         [EnabledIf("_selectCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public channel _selectCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "select", Description: "The output identifier.", Order: 30.3)]
         [EnabledIf("_selectCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _selectCPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "select", Description: "Returns the current output identifier.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public channel _selectQR { get; private set; }
         #endregion
@@ -1860,12 +2176,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xInstrumentSelectStep()
+        {
+            {
+                Name = "INSTrument:[SELect]";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Instrument.SetSelect((_selectCPCustomInput ? _selectCPStr : _selectCP.ToString()));
 
@@ -1885,7 +2209,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xInstrumentNselectStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1897,45 +2221,60 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "nselect", Description: "Instrument output.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _nselectCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "nselect", Description: "Return the currently selected output by the INSTrument[SELect]", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _nselectQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xInstrumentNselectStep()
+        {
+            {
+                Name = "INSTrument:NSELect";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -1944,7 +2283,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Instrument.SetNselect(_nselectCP);
 
@@ -1955,20 +2294,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _nselectQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("nselect", new { Nselect = (int)_nselectQR });
+                if (publishResults)
+                {
+                    Results.Publish("nselect", new { Nselect = (int)_nselectQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -1981,7 +2323,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xInstrumentCoupleTriggerStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -1993,45 +2335,60 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the power supply function.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the power supply function.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _stateQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xInstrumentCoupleTriggerStep()
+        {
+            {
+                Name = "INSTrument:COUPle:[TRIGger]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2040,7 +2397,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Instrument.SetCoupleTrigger(_stateCP);
 
@@ -2051,20 +2408,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _stateQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("state", new { State = (int)_stateQR });
+                if (publishResults)
+                {
+                    Results.Publish("state", new { State = (int)_stateQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -2079,7 +2439,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xMeasureScalarCurrentDcStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2091,41 +2451,56 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "current", Description: "Returns the current measured across the current sense resistor inside the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _currentQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xMeasureScalarCurrentDcStep()
+        {
+            {
+                Name = "MEASure:[SCALar]:CURRent:[DC]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2138,20 +2513,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             double? result = _currentQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("current", new { Current = (double)_currentQR });
+            if (publishResults)
+            {
+                Results.Publish("current", new { Current = (double)_currentQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -2163,7 +2541,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xMeasureScalarVoltageDcStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2175,41 +2553,56 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "voltage", Description: "Returns the voltage measured at the sense terminals of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _voltageQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xMeasureScalarVoltageDcStep()
+        {
+            {
+                Name = "MEASure:[SCALar]:[VOLTage]:[DC]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2222,20 +2615,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             double? result = _voltageQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+            if (publishResults)
+            {
+                Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -2249,7 +2645,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xMemoryStateNameStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2261,26 +2657,26 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "name", Description: "The storage location.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _nameCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "quotedName", Description: "Name of the storage location.", Order: 30.2)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _quotedNameCP { get; set; }
         [Display(Group: "Query Parameter ", Name: "name", Description: "The storage location.", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _nameQP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "quotedName", Description: "Returns the current value of name of the storage location.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _quotedNameQR { get; private set; }
         #endregion
@@ -2288,12 +2684,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xMemoryStateNameStep()
+        {
+            {
+                Name = "MEMory:STATe:NAME";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Memory.SetStateName(_nameCP, _quotedNameCP);
 
@@ -2315,7 +2719,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xOutputStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2327,33 +2731,48 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the outputs of the power supply.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the outputs of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xOutputStateStep()
+        {
+            {
+                Name = "OUTPut:[STATe]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2362,7 +2781,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Output.SetState(_stateCP);
 
@@ -2373,7 +2792,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -2389,7 +2810,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xOutputRelayStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2401,33 +2822,48 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "State of the function.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of state of the function.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xOutputRelayStateStep()
+        {
+            {
+                Name = "OUTPut:RELay:[STATe]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2436,7 +2872,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Output.SetRelayState(_stateCP);
 
@@ -2447,7 +2883,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -2463,7 +2901,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xOutputTrackStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2475,33 +2913,48 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the power supply to operate in the track mode.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the power supply to operate in the track mode.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xOutputTrackStateStep()
+        {
+            {
+                Name = "OUTPut:TRACk:[STATe]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2510,7 +2963,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Output.SetTrackState(_stateCP);
 
@@ -2521,7 +2974,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -2539,7 +2994,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceCurrentLevelImmediateAmplitudeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2551,69 +3006,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "current Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _currentCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "The immediate current level of the power supply.", Order: 30.2)]
         [EnabledIf("_currentCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMaxUpDown _currentCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "The immediate current level of the power supply.", Order: 30.3)]
         [EnabledIf("_currentCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _currentCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum | UP | DOWN", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum | UP | DOWN", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "current", Description: "Returns the current value of the immediate current level of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _currentQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceCurrentLevelImmediateAmplitudeStep()
+        {
+            {
+                Name = "[SOURce]:CURRent:[LEVel]:[IMMediate]:[AMPLitude]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2622,7 +3092,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetCurrentLevelImmediateAmplitude((_currentCPCustomInput ? _currentCPStr : _currentCP.ToString()));
 
@@ -2633,20 +3103,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _currentQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("current", new { Current = (double)_currentQR });
+                if (publishResults)
+                {
+                    Results.Publish("current", new { Current = (double)_currentQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -2659,7 +3132,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceCurrentLevelImmediateStepIncrementStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2671,69 +3144,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "numericValue Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _numericValueCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The step size for current programming with the CURRent UPand CURRentDOWN commands.", Order: 30.2)]
         [EnabledIf("_numericValueCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public _default _numericValueCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The step size for current programming with the CURRent UPand CURRentDOWN commands.", Order: 30.3)]
         [EnabledIf("_numericValueCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _numericValueCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "default Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _defaultQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "default", Description: "Default.", Order: 40.2)]
         [EnabledIf("_defaultQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public _default _defaultQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "default", Description: "Default.", Order: 40.3)]
         [EnabledIf("_defaultQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _defaultQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "numericValue", Description: "Return the value of the step size currently specified.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _numericValueQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceCurrentLevelImmediateStepIncrementStep()
+        {
+            {
+                Name = "[SOURce]:CURRent:[LEVel]:[IMMediate]:STEP:[INCRement]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2742,7 +3230,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetCurrentLevelImmediateStepIncrement((_numericValueCPCustomInput ? _numericValueCPStr : _numericValueCP.ToString()));
 
@@ -2753,20 +3241,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _numericValueQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("numericValue", new { Numericvalue = (double)_numericValueQR });
+                if (publishResults)
+                {
+                    Results.Publish("numericValue", new { Numericvalue = (double)_numericValueQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -2779,7 +3270,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceCurrentLevelTriggeredAmplitudeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2791,69 +3282,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "current Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _currentCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "The the pending triggered current level.", Order: 30.2)]
         [EnabledIf("_currentCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMax _currentCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "current", Description: "The the pending triggered current level.", Order: 30.3)]
         [EnabledIf("_currentCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _currentCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "current", Description: "Returns the triggered current level presently programmed.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _currentQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceCurrentLevelTriggeredAmplitudeStep()
+        {
+            {
+                Name = "[SOURce]:CURRent:[LEVel]:TRIGgered:[AMPLitude]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -2862,7 +3368,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetCurrentLevelTriggeredAmplitude((_currentCPCustomInput ? _currentCPStr : _currentCP.ToString()));
 
@@ -2873,20 +3379,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _currentQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("current", new { Current = (double)_currentQR });
+                if (publishResults)
+                {
+                    Results.Publish("current", new { Current = (double)_currentQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -2899,7 +3408,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageRangeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2911,28 +3420,28 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "range Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _rangeCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "range", Description: "The range.", Order: 30.2)]
         [EnabledIf("_rangeCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public output _rangeCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "range", Description: "The range.", Order: 30.3)]
         [EnabledIf("_rangeCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _rangeCPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "range", Description: "Returns the currently selected range.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public output _rangeQR { get; private set; }
         #endregion
@@ -2940,12 +3449,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xSourceVoltageRangeStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:RANGe";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageRange((_rangeCPCustomInput ? _rangeCPStr : _rangeCP.ToString()));
 
@@ -2965,7 +3482,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageProtectionClearStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -2977,7 +3494,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -2986,6 +3503,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageProtectionClearStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:PROTection:CLEar";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3004,7 +3529,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageProtectionLevelStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3016,69 +3541,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "voltage Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _voltageCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The voltage level at which the overvoltage protection (OVP) circuit will trip.", Order: 30.2)]
         [EnabledIf("_voltageCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMax _voltageCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The voltage level at which the overvoltage protection (OVP) circuit will trip.", Order: 30.3)]
         [EnabledIf("_voltageCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _voltageCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum|MAXimum", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum|MAXimum", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "voltage", Description: "Returns the current value of the voltage level at which the overvoltage protection (OVP) circuit will trip.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _voltageQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageProtectionLevelStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:PROTection:[LEVel]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3087,7 +3627,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageProtectionLevel((_voltageCPCustomInput ? _voltageCPStr : _voltageCP.ToString()));
 
@@ -3098,20 +3638,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _voltageQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                if (publishResults)
+                {
+                    Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3124,7 +3667,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageProtectionStateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3136,33 +3679,48 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "state", Description: "Enable/disable the overvoltage protection function.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _stateCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "state", Description: "Returns the current value of the overvoltage protection function.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _stateQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageProtectionStateStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:PROTection:STATe";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3171,7 +3729,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageProtectionState(_stateCP);
 
@@ -3182,7 +3740,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 bool result = _stateQR;
 
-                if (result == TestValue)
+                if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+                { MyVerdict = Verdict.Pass; }
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
@@ -3198,7 +3758,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageProtectionTrippedStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3210,29 +3770,44 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "tripped", Description: "Returns the current value of the function.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _trippedQR { get; private set; }
         #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, Ignore };
+        [Display(Group: "Boolean Test", Name: "Boolean Test", Order: 61.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
 
-        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [Display(Group: "Boolean Test", Name: "Test Value", Order: 61.2)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public bool TestValue { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageProtectionTrippedStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:PROTection:TRIPped";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3245,7 +3820,9 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             bool result = _trippedQR;
 
-            if (result == TestValue)
+            if (result == TestValue && VerdictTest == VerdictTestEnum.EqualTo)
+            { MyVerdict = Verdict.Pass; }
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
@@ -3260,7 +3837,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageLevelImmediateAmplitudeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3272,69 +3849,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "voltage Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _voltageCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The immediate voltage level of the power supply.", Order: 30.2)]
         [EnabledIf("_voltageCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMaxUpDown _voltageCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The immediate voltage level of the power supply.", Order: 30.3)]
         [EnabledIf("_voltageCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _voltageCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum | UP | DOWN", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum | UP | DOWN", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "voltage", Description: "Returnsthe presently programmed voltage level of the power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _voltageQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageLevelImmediateAmplitudeStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:[LEVel]:[IMMediate]:[AMPLitude]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3343,7 +3935,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageLevelImmediateAmplitude((_voltageCPCustomInput ? _voltageCPStr : _voltageCP.ToString()));
 
@@ -3354,20 +3946,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _voltageQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                if (publishResults)
+                {
+                    Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3380,7 +3975,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageLevelImmediateStepIncrementStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3392,69 +3987,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "numericValue Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _numericValueCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The value of the step size currently specified.", Order: 30.2)]
         [EnabledIf("_numericValueCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public _default _numericValueCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "numericValue", Description: "The value of the step size currently specified.", Order: 30.3)]
         [EnabledIf("_numericValueCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _numericValueCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "default Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _defaultQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "default", Description: "Default.", Order: 40.2)]
         [EnabledIf("_defaultQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public _default _defaultQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "default", Description: "Default.", Order: 40.3)]
         [EnabledIf("_defaultQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _defaultQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "numericValue", Description: "Returns the current  value of the step size currently specified.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _numericValueQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageLevelImmediateStepIncrementStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:[LEVel]:[IMMediate]:STEP:[INCRement]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3463,7 +4073,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageLevelImmediateStepIncrement((_numericValueCPCustomInput ? _numericValueCPStr : _numericValueCP.ToString()));
 
@@ -3474,20 +4084,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _numericValueQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("numericValue", new { Numericvalue = (double)_numericValueQR });
+                if (publishResults)
+                {
+                    Results.Publish("numericValue", new { Numericvalue = (double)_numericValueQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3500,7 +4113,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSourceVoltageLevelTriggeredAmplitudeStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3512,69 +4125,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "voltage Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _voltageCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The pending triggered voltage level.", Order: 30.2)]
         [EnabledIf("_voltageCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMax _voltageCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "voltage", Description: "The pending triggered voltage level.", Order: 30.3)]
         [EnabledIf("_voltageCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _voltageCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "voltage", Description: "Returns the triggered voltage level presently programmed.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _voltageQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSourceVoltageLevelTriggeredAmplitudeStep()
+        {
+            {
+                Name = "[SOURce]:VOLTage:[LEVel]:TRIGgered:[AMPLitude]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3583,7 +4211,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Source.SetVoltageLevelTriggeredAmplitude((_voltageCPCustomInput ? _voltageCPStr : _voltageCP.ToString()));
 
@@ -3594,20 +4222,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _voltageQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                if (publishResults)
+                {
+                    Results.Publish("voltage", new { Voltage = (double)_voltageQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3622,7 +4253,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableEnableStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3634,45 +4265,60 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "enable", Description: "The Questionable Status Enable register.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _enableCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "enable", Description: "Returns the Questionable Status Enable register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _enableQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableEnableStep()
+        {
+            {
+                Name = "STATus:QUEStionable:ENABle";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3681,7 +4327,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Status.SetQuestionableEnable(_enableCP);
 
@@ -3692,20 +4338,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _enableQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("enable", new { Enable = (int)_enableQR });
+                if (publishResults)
+                {
+                    Results.Publish("enable", new { Enable = (int)_enableQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3718,7 +4367,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableEventStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3730,41 +4379,56 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "event", Description: "Returns the Questionable Status Event register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _eventQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableEventStep()
+        {
+            {
+                Name = "STATus:QUEStionable:[EVENt]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3777,20 +4441,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _eventQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("event", new { Event = (int)_eventQR });
+            if (publishResults)
+            {
+                Results.Publish("event", new { Event = (int)_eventQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -3802,7 +4469,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableInstrumentEventStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3814,41 +4481,56 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "event", Description: "Returns the Questionable Instrument Event register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _eventQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableInstrumentEventStep()
+        {
+            {
+                Name = "STATus:QUEStionable:INSTrument:[EVENt]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3861,20 +4543,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
             int? result = _eventQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("event", new { Event = (int)_eventQR });
+            if (publishResults)
+            {
+                Results.Publish("event", new { Event = (int)_eventQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -3886,7 +4571,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableInstrumentEnableStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3898,45 +4583,60 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "enableValue", Description: "The value of the Questionable Instrument Enable register.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _enableValueCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "enable", Description: "Return the value of the Questionable Instrument Enable register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _enableQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableInstrumentEnableStep()
+        {
+            {
+                Name = "STATus:QUEStionable:INSTrument:ENABle";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -3945,7 +4645,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Status.SetQuestionableInstrumentEnable(_enableValueCP);
 
@@ -3956,20 +4656,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 int? result = _enableQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("enable", new { Enable = (int)_enableQR });
+                if (publishResults)
+                {
+                    Results.Publish("enable", new { Enable = (int)_enableQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -3982,7 +4685,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableInstrumentIsummaryConditionStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -3994,43 +4697,58 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
-        [Display(Group: "Node Suffixes", Name: "ISUM Suffix (n)", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
-        public int? ISUMSuffix { get; set; }
+        [Display(Group: "Settings", Name: "ISUMmary <n>", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
+        public int? ISUMmarySuffix { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "condition", Description: "Return the CV or CC condition of the specified instrument.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _conditionQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableInstrumentIsummaryConditionStep()
+        {
+            {
+                Name = "STATus:QUEStionable:INSTrument:ISUMmary:CONDition";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4039,24 +4757,27 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            _conditionQR = myInstrument.Status.GetQuestionableInstrumentIsummaryCondition(ISUMSuffix);
+            _conditionQR = myInstrument.Status.GetQuestionableInstrumentIsummaryCondition(ISUMmarySuffix);
 
             int? result = _conditionQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("condition", new { Condition = (int)_conditionQR });
+            if (publishResults)
+            {
+                Results.Publish("condition", new { Condition = (int)_conditionQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -4068,7 +4789,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableInstrumentIsummaryEventStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4080,43 +4801,58 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
-        [Display(Group: "Node Suffixes", Name: "ISUM Suffix (n)", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
-        public int? ISUMSuffix { get; set; }
+        [Display(Group: "Settings", Name: "ISUMmary <n>", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
+        public int? ISUMmarySuffix { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "event", Description: "Return the value of the Questionable Instrument Isummary Event register for a specific output of the two-output power supply.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _eventQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableInstrumentIsummaryEventStep()
+        {
+            {
+                Name = "STATus:QUEStionable:INSTrument:ISUMmary:[EVENt]";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4125,24 +4861,27 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            _eventQR = myInstrument.Status.GetQuestionableInstrumentIsummaryEvent(ISUMSuffix);
+            _eventQR = myInstrument.Status.GetQuestionableInstrumentIsummaryEvent(ISUMmarySuffix);
 
             int? result = _eventQR;
 
-            if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+            if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
             { MyVerdict = Verdict.Pass; }
-            else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+            else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
             { MyVerdict = Verdict.Pass; }
-            else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+            else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
             { MyVerdict = Verdict.Pass; }
-            else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+            else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
             { MyVerdict = Verdict.Pass; }
-            else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+            else if (VerdictTest == VerdictTestEnum.Ignore)
             { MyVerdict = Verdict.Pass; }
             else
             { MyVerdict = Verdict.Fail; }
             UpgradeVerdict(MyVerdict);
-            Results.Publish("event", new { Event = (int)_eventQR });
+            if (publishResults)
+            {
+                Results.Publish("event", new { Event = (int)_eventQR });
+            }
             myInstrument.IoTimeout = tempTimeout;
         }
         #endregion
@@ -4154,7 +4893,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xStatusQuestionableInstrumentIsummaryEnableStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4166,47 +4905,62 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
-        [Display(Group: "Node Suffixes", Name: "ISUM Suffix (n)", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
-        public int? ISUMSuffix { get; set; }
+        [Display(Group: "Settings", Name: "ISUMmary <n>", Description: "output identifier. (min: 1, max: 2)", Order: 25.1)]
+        public int? ISUMmarySuffix { get; set; }
         [Display(Group: "Command Parameter ", Name: "enableValue", Description: "The value of the Questionable Instrument Isummary Enable register.", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public int? _enableValueCP { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "enableValue", Description: "Returns the current value of the Questionable Instrument Isummary Enable register.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _enableValueQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public int UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xStatusQuestionableInstrumentIsummaryEnableStep()
+        {
+            {
+                Name = "STATus:QUEStionable:INSTrument:ISUMmary:ENABle";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4215,31 +4969,34 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
-                myInstrument.Status.SetQuestionableInstrumentIsummaryEnable(ISUMSuffix, _enableValueCP);
+                myInstrument.Status.SetQuestionableInstrumentIsummaryEnable(ISUMmarySuffix, _enableValueCP);
 
             }
             else
             {
-                _enableValueQR = myInstrument.Status.GetQuestionableInstrumentIsummaryEnable(ISUMSuffix);
+                _enableValueQR = myInstrument.Status.GetQuestionableInstrumentIsummaryEnable(ISUMmarySuffix);
 
                 int? result = _enableValueQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                if (publishResults)
+                {
+                    Results.Publish("enableValue", new { Enablevalue = (int)_enableValueQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -4254,7 +5011,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemBeeperImmediateStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4266,7 +5023,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -4275,6 +5032,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemBeeperImmediateStep()
+        {
+            {
+                Name = "SYSTem:BEEPer:[IMMediate]";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4293,7 +5058,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemErrorStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4305,25 +5070,33 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "erorr", Description: "Erorr numbers.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public int? _erorrQR { get; private set; }
         [Output]
         [Display(Group: "Query Response ", Name: "message", Description: "Messages.", Order: 50.2)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _messageQR { get; private set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemErrorStep()
+        {
+            {
+                Name = "SYSTem:ERRor";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4342,7 +5115,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemInterfaceStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4354,29 +5127,37 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "interface Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _interfaceCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "interface", Description: "The remote interface.", Order: 30.2)]
         [EnabledIf("_interfaceCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public gpibRs232 _interfaceCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "interface", Description: "The remote interface.", Order: 30.3)]
         [EnabledIf("_interfaceCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _interfaceCPStr { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemInterfaceStep()
+        {
+            {
+                Name = "SYSTem:INTerface";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4395,7 +5176,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemLocalStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4407,7 +5188,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -4416,6 +5197,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemLocalStep()
+        {
+            {
+                Name = "SYSTem:LOCal";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4434,7 +5223,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemRemoteStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4446,7 +5235,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -4455,6 +5244,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemRemoteStep()
+        {
+            {
+                Name = "SYSTem:REMote";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4473,7 +5270,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemRwlockStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4485,7 +5282,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write }
+        public enum SetAction { Command }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
@@ -4494,6 +5291,14 @@ namespace OpenTap.Plugins.PluginDevelopment
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemRwlockStep()
+        {
+            {
+                Name = "SYSTem:RWLock";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4512,7 +5317,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xSystemVersionStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4524,20 +5329,28 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Read }
+        public enum SetAction { Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Output]
         [Display(Group: "Query Response ", Name: "version", Description: "Returns the power supply to determine the present SCPI version.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _versionQR { get; private set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xSystemVersionStep()
+        {
+            {
+                Name = "SYSTem:VERSion";
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4558,7 +5371,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xTriggerSequenceDelayStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4570,69 +5383,84 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "seconds Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _secondsCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "seconds", Description: "The trigger delay.", Order: 30.2)]
         [EnabledIf("_secondsCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public minMax _secondsCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "seconds", Description: "The trigger delay.", Order: 30.3)]
         [EnabledIf("_secondsCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _secondsCPStr { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset Custom Input", Order: 40.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public bool _presetQPCustomInput { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.2)]
         [EnabledIf("_presetQPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public minMax _presetQP { get; set; }
         [Display(Group: "Query Parameter ", Name: "preset", Description: "MINimum | MAXimum", Order: 40.3)]
         [EnabledIf("_presetQPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public string _presetQPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "seconds", Description: "Returns the current value of the trigger delay.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public double? _secondsQR { get; private set; }
         #endregion
+        #region Result Checkbox
+        [Display("Publish Results", Group: "Results", Description: "Enable to publish results", Order: 58.1)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public bool publishResults { get; set; }
+        #endregion
         #region Verdict Properties
+        [Output]
         [Display("Verdict", Group: "Verdict", Order: 60.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public Verdict MyVerdict { get; set; }
-        public enum NumericLimitTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public Verdict MyVerdict { get; private set; }
+        public enum VerdictTestEnum { EqualTo, LessThan, GreaterThan, InBetween, Ignore };
         [Display(Group: "Numeric Limit Test", Name: "Numeric Limit Test", Order: 61.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
-        public NumericLimitTestEnum NumericLimitTest { get; set; }
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
+        public VerdictTestEnum VerdictTest { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Value", Order: 61.2, Description: "The value allowed. If not equal, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.EqualTo, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.EqualTo, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double ValueEqualTo { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Lower Limit Value", Order: 61.3, Description: "The minimum value allowed. If less, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.GreaterThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.GreaterThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double LowerLimit { get; set; }
         [Display(Group: "Numeric Limit Test", Name: "Upper Limit Value", Order: 61.4, Description: "The maximum value allowed. If exceeded, the test will be marked as failed.")]
-        [EnabledIf("NumericLimitTest", NumericLimitTestEnum.LessThan, NumericLimitTestEnum.InBetween, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("VerdictTest", VerdictTestEnum.LessThan, VerdictTestEnum.InBetween, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
         public double UpperLimit { get; set; }
         #endregion
         #region Timeout
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
+        #endregion
+        #region Constructor
+        public E364xTriggerSequenceDelayStep()
+        {
+            {
+                Name = "TRIGger:[SEQuence]:DELay";
+                VerdictTest = VerdictTestEnum.Ignore;
+            }
+        }
         #endregion
         #region Run Method
         public override void Run()
@@ -4641,7 +5469,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             UpgradeVerdict(MyVerdict);
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Trigger.SetSequenceDelay((_secondsCPCustomInput ? _secondsCPStr : _secondsCP.ToString()));
 
@@ -4652,20 +5480,23 @@ namespace OpenTap.Plugins.PluginDevelopment
 
                 double? result = _secondsQR;
 
-                if ((result > LowerLimit && result < UpperLimit) && NumericLimitTest == NumericLimitTestEnum.InBetween)
+                if ((result > LowerLimit && result < UpperLimit) && VerdictTest == VerdictTestEnum.InBetween)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result == ValueEqualTo) && NumericLimitTest == NumericLimitTestEnum.EqualTo)
+                else if ((result == ValueEqualTo) && VerdictTest == VerdictTestEnum.EqualTo)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result >= LowerLimit) && NumericLimitTest == NumericLimitTestEnum.GreaterThan)
+                else if ((result >= LowerLimit) && VerdictTest == VerdictTestEnum.GreaterThan)
                 { MyVerdict = Verdict.Pass; }
-                else if ((result <= UpperLimit) && NumericLimitTest == NumericLimitTestEnum.LessThan)
+                else if ((result <= UpperLimit) && VerdictTest == VerdictTestEnum.LessThan)
                 { MyVerdict = Verdict.Pass; }
-                else if (NumericLimitTest == NumericLimitTestEnum.Ignore)
+                else if (VerdictTest == VerdictTestEnum.Ignore)
                 { MyVerdict = Verdict.Pass; }
                 else
                 { MyVerdict = Verdict.Fail; }
                 UpgradeVerdict(MyVerdict);
-                Results.Publish("seconds", new { Seconds = (double)_secondsQR });
+                if (publishResults)
+                {
+                    Results.Publish("seconds", new { Seconds = (double)_secondsQR });
+                }
             }
             myInstrument.IoTimeout = tempTimeout;
         }
@@ -4678,7 +5509,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     public class E364xTriggerSequenceSourceStep : TestStep
     {
         #region Help Button
-        [Display("Detail Help")]
+        [Display("Detailed Help")]
         [Browsable(true)]
         public void OpenHelpLink()
         {
@@ -4690,28 +5521,28 @@ namespace OpenTap.Plugins.PluginDevelopment
         public E364xInstrument myInstrument { get; set; }
         #endregion
         #region SetAction
-        public enum SetAction { Write, Read }
+        public enum SetAction { Command, Query }
         [Display(Group: "Settings", Name: "Operation Type", Order: 20.1)]
         public SetAction Action { get; set; }
         #endregion
         #region Parameter/Response/Suffix Properties
         [Display(Group: "Command Parameter ", Name: "source Custom Input", Order: 30.1)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public bool _sourceCPCustomInput { get; set; }
         [Display(Group: "Command Parameter ", Name: "source", Description: "The trigger source.", Order: 30.2)]
         [EnabledIf("_sourceCPCustomInput", false, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public busImmediate _sourceCP { get; set; }
         [Display(Group: "Command Parameter ", Name: "source", Description: "The trigger source.", Order: 30.3)]
         [EnabledIf("_sourceCPCustomInput", true, HideIfDisabled = true)]
-        [EnabledIf("Action", SetAction.Write, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Command, HideIfDisabled = true)]
 
         public string _sourceCPStr { get; set; }
         [Output]
         [Display(Group: "Query Response ", Name: "source", Description: "Returns the present trigger source.", Order: 50.1)]
-        [EnabledIf("Action", SetAction.Read, HideIfDisabled = true)]
+        [EnabledIf("Action", SetAction.Query, HideIfDisabled = true)]
 
         public busImmediate _sourceQR { get; private set; }
         #endregion
@@ -4719,12 +5550,20 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Display(Group: "Timeout", Name: "I/O Timeout", Description: "I/O timeout duration in milliseconds", Order: 70.1)]
         public int? timeout { get; set; }
         #endregion
+        #region Constructor
+        public E364xTriggerSequenceSourceStep()
+        {
+            {
+                Name = "TRIGger:[SEQuence]:SOURce";
+            }
+        }
+        #endregion
         #region Run Method
         public override void Run()
         {
             int tempTimeout = myInstrument.IoTimeout;
             myInstrument.IoTimeout = timeout != null ? (int)timeout : myInstrument.IoTimeout;
-            if (Action == SetAction.Write)
+            if (Action == SetAction.Command)
             {
                 myInstrument.Trigger.SetSequenceSource((_sourceCPCustomInput ? _sourceCPStr : _sourceCP.ToString()));
 
