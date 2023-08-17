@@ -2,6 +2,8 @@
 Repository containing source code of cross-platform OpenTAP plugins for multiple Keysight Instruments.
 These plugins make it possible for Keysight Test Automation and OpenTAP users to automate creating measurements' setups, performing measurement sweeps, collecting data and publishing results without any external dependency.
 
+*<u>Note:</u> These plugins are auto-generated using XTP tool utilizing native SCPI calls to an instrument.*
+
 **Some key functionalities provided by these plugins are:**
 
 - Connect with various Keysight Instruments.
