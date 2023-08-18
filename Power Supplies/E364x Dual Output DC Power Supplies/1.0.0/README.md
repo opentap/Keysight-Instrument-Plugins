@@ -2,9 +2,6 @@
 
 The E364xA power supplies feature a combination of programming capabilities and linear power supply performance that makes them ideal for power systems applications.
   
-**Instrument Firmware Version:** 1.7  
-**IDF Revision Number:** 3  
-  
 **Status**  
 &emsp;  Released  
   
