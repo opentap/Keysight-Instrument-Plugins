@@ -18,9 +18,6 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 <Package Name="E364x Dual Output DC Power Supplies" Version="1.0.0" OS="Windows,Linux" Architecture="AnyCPU" xmlns="http://opentap.io/schemas/package" Group="Keysight Instrument Plugins/Power Supplies">
 <Description>
 E364x Dual Output DC Power Supplies - The E364xA power supplies feature a combination of programming capabilities and linear power supply performance that makes them ideal for power systems applications. 
-
-Instrument Firmware Version: 1.7, 
-IDF Revision Number: 3
 <Status>Released</Status>
 <Organisation>Keysight Technologies, Inc.</Organisation>
 <Hardware>E3645A, E3646A, E3647A, E3648A, E3649A</Hardware>
