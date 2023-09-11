@@ -33,14 +33,14 @@ namespace OpenTap.Plugins.PluginDevelopment
             bool notWindows = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             string filePath = packagesPrefix + helplink;
             filePath = notWindows ? filePath.Replace(@"\", "/") : filePath;
-            if (File.Exists(filePath)) { Log.CreateSource("HelpLink").Info("Opening HTML file from the location - " + filePath); Process p = notWindows ? Process.Start(new ProcessStartInfo { FileName = "/bin/bash", Arguments = $"-c \"xdg-open '{filePath}'\"", UseShellExecute = false }) : Process.Start(filePath); }
+            if (File.Exists(filePath)) { Log.CreateSource("HelpLink").Debug("Opening HTML file from the location - " + filePath); Process p = notWindows ? Process.Start(new ProcessStartInfo { FileName = "/bin/bash", Arguments = $"-c \"xdg-open '{filePath}'\"", UseShellExecute = false }) : Process.Start(filePath); }
             else { Log.CreateSource("HelpLink").Error("Helplink file could not be found at location - " + filePath); }
         }
     }
     #endregion
     #region Common Instrument Commands
     #region CommonCommandsAad
-    [Display("*AAD", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command, in conjunction with the Address Set protocol, allows the controller to detect all address-configurable devices (that is, devices that implement this command) and assign an IEEE 488.1 address to each of those devices.")]
+    [Display("*AAD", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command, in conjunction with the Address Set protocol, allows the controller to detect all address-configurable devices (that is, devices that implement this command) and assign an IEEE 488.1 address to each of those devices.")]
     public class CommonCommandsAad : TestStep
     {
         #region Help Button
@@ -48,7 +48,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_AAD.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_AAD.htm");
         }
         #endregion
         #region Instrument
@@ -85,7 +85,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsCal
-    [Display("*CAL", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Calibration query causes a device to perform an internal self-calibration and generate a response that indicates whether or not the device completed the self-calibration without error.")]
+    [Display("*CAL", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Calibration query causes a device to perform an internal self-calibration and generate a response that indicates whether or not the device completed the self-calibration without error.")]
     public class CommonCommandsCal : TestStep
     {
         #region Help Button
@@ -93,7 +93,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_CAL.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_CAL.htm");
         }
         #endregion
         #region Instrument
@@ -179,7 +179,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsCls
-    [Display("*CLS", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command clears the event registers in all register groups. This command also clears the Error queue.")]
+    [Display("*CLS", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command clears the event registers in all register groups. This command also clears the Error queue.")]
     public class CommonCommandsCls : TestStep
     {
         #region Help Button
@@ -187,7 +187,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_CLS.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_CLS.htm");
         }
         #endregion
         #region Instrument
@@ -224,7 +224,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsDdt
-    [Display("*DDT", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Define Device Trigger command stores a command sequence that is executed when a group execute trigger (GET), IEEE 488.1 interface message, or *TRG common command is received.")]
+    [Display("*DDT", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Define Device Trigger command stores a command sequence that is executed when a group execute trigger (GET), IEEE 488.1 interface message, or *TRG common command is received.")]
     public class CommonCommandsDdt : TestStep
     {
         #region Help Button
@@ -232,7 +232,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_DDT.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_DDT.htm");
         }
         #endregion
         #region Instrument
@@ -311,7 +311,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsDlf
-    [Display("*DLF", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Disable Listener Function command causes a device to cease being a listener (change to L0 subset).")]
+    [Display("*DLF", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Disable Listener Function command causes a device to cease being a listener (change to L0 subset).")]
     public class CommonCommandsDlf : TestStep
     {
         #region Help Button
@@ -319,7 +319,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_DLF.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_DLF.htm");
         }
         #endregion
         #region Instrument
@@ -356,7 +356,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsDmc
-    [Display("*DMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Define Macro command allows the programmer to assign a sequence of zero or more program message unit elements to a macro label.")]
+    [Display("*DMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Define Macro command allows the programmer to assign a sequence of zero or more program message unit elements to a macro label.")]
     public class CommonCommandsDmc : TestStep
     {
         #region Help Button
@@ -364,7 +364,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_DMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_DMC.htm");
         }
         #endregion
         #region Instrument
@@ -428,7 +428,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsEmc
-    [Display("*EMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Enable Macro command enables and disables expansion of macros.")]
+    [Display("*EMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Enable Macro command enables and disables expansion of macros.")]
     public class CommonCommandsEmc : TestStep
     {
         #region Help Button
@@ -436,7 +436,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_EMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_EMC.htm");
         }
         #endregion
         #region Instrument
@@ -534,7 +534,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsEse
-    [Display("*ESE", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command enables bits in the enable register for the Standard Event Register group.")]
+    [Display("*ESE", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command enables bits in the enable register for the Standard Event Register group.")]
     public class CommonCommandsEse : TestStep
     {
         #region Help Button
@@ -542,7 +542,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_ESE.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_ESE.htm");
         }
         #endregion
         #region Instrument
@@ -640,7 +640,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsEsr
-    [Display("*ESR", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command queries the event register for the Standard Event Register group.")]
+    [Display("*ESR", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command queries the event register for the Standard Event Register group.")]
     public class CommonCommandsEsr : TestStep
     {
         #region Help Button
@@ -648,7 +648,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_ESR_.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_ESR_.htm");
         }
         #endregion
         #region Instrument
@@ -734,7 +734,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsGmc
-    [Display("*GMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Get Macro Contents query allows the current definition of a macro to be retrieved from a device.")]
+    [Display("*GMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Get Macro Contents query allows the current definition of a macro to be retrieved from a device.")]
     public class CommonCommandsGmc : TestStep
     {
         #region Help Button
@@ -742,7 +742,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_GMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_GMC.htm");
         }
         #endregion
         #region Instrument
@@ -798,7 +798,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsIdn
-    [Display("*IDN", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command reads the instrument's (mainframe) identification string which contains comma-separated fields.")]
+    [Display("*IDN", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command reads the instrument's (mainframe) identification string which contains comma-separated fields.")]
     public class CommonCommandsIdn : TestStep
     {
         #region Help Button
@@ -806,7 +806,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_IDN_.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_IDN_.htm");
         }
         #endregion
         #region Instrument
@@ -848,7 +848,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsIst
-    [Display("*IST", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Individual Status query allows the programmer to read the current state of the IEEE 488.1 defined “ist” local message in the device.")]
+    [Display("*IST", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Individual Status query allows the programmer to read the current state of the IEEE 488.1 defined “ist” local message in the device.")]
     public class CommonCommandsIst : TestStep
     {
         #region Help Button
@@ -856,7 +856,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_IST.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_IST.htm");
         }
         #endregion
         #region Instrument
@@ -942,7 +942,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsLmc
-    [Display("*LMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This query returns the currently defined macro labels.")]
+    [Display("*LMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This query returns the currently defined macro labels.")]
     public class CommonCommandsLmc : TestStep
     {
         #region Help Button
@@ -950,7 +950,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_LMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_LMC.htm");
         }
         #endregion
         #region Instrument
@@ -992,7 +992,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsLrn
-    [Display("*LRN", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command returns the learn string, which is an ASCII string of SCPI commands.")]
+    [Display("*LRN", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command returns the learn string, which is an ASCII string of SCPI commands.")]
     public class CommonCommandsLrn : TestStep
     {
         #region Help Button
@@ -1000,7 +1000,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_LRN_.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_LRN_.htm");
         }
         #endregion
         #region Instrument
@@ -1042,7 +1042,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsOpc
-    [Display("*OPC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command sets the ”Operation Complete” bit (bit 0) in the Standard Event register at the completion of the current operation.  This command returns ”1” to the output buffer at the completion of the current operation.")]
+    [Display("*OPC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command sets the ”Operation Complete” bit (bit 0) in the Standard Event register at the completion of the current operation.  This command returns ”1” to the output buffer at the completion of the current operation.")]
     public class CommonCommandsOpc : TestStep
     {
         #region Help Button
@@ -1050,7 +1050,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_OPC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_OPC.htm");
         }
         #endregion
         #region Instrument
@@ -1144,7 +1144,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsOpt
-    [Display("*OPT", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Option Identification query is for identifying reportable device options over the system interface.")]
+    [Display("*OPT", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Option Identification query is for identifying reportable device options over the system interface.")]
     public class CommonCommandsOpt : TestStep
     {
         #region Help Button
@@ -1152,7 +1152,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_OPT.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_OPT.htm");
         }
         #endregion
         #region Instrument
@@ -1194,7 +1194,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsPcb
-    [Display("*PCB", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Pass Control Back command is used by a controller to tell a device, being a potential controller, to which address the control is to be passed back when the device (acting as a controller) sends the IEEE 488.1 interface message, take control (TCT).")]
+    [Display("*PCB", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Pass Control Back command is used by a controller to tell a device, being a potential controller, to which address the control is to be passed back when the device (acting as a controller) sends the IEEE 488.1 interface message, take control (TCT).")]
     public class CommonCommandsPcb : TestStep
     {
         #region Help Button
@@ -1202,7 +1202,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_PCB.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_PCB.htm");
         }
         #endregion
         #region Instrument
@@ -1247,7 +1247,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsPmc
-    [Display("*PMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Purge Macros command causes the device to delete all macros that may have been previously defined using the *DMC command.")]
+    [Display("*PMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Purge Macros command causes the device to delete all macros that may have been previously defined using the *DMC command.")]
     public class CommonCommandsPmc : TestStep
     {
         #region Help Button
@@ -1255,7 +1255,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_PMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_PMC.htm");
         }
         #endregion
         #region Instrument
@@ -1292,7 +1292,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsPre
-    [Display("*PRE", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Parallel Poll Enable Register command sets the Parallel Poll Enable Register bits.  The Parallel Poll Enable Register query allows the programmer to determine the current contents of the Parallel Poll Enable Register.")]
+    [Display("*PRE", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Parallel Poll Enable Register command sets the Parallel Poll Enable Register bits.  The Parallel Poll Enable Register query allows the programmer to determine the current contents of the Parallel Poll Enable Register.")]
     public class CommonCommandsPre : TestStep
     {
         #region Help Button
@@ -1300,7 +1300,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_PRE.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_PRE.htm");
         }
         #endregion
         #region Instrument
@@ -1398,7 +1398,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsPsc
-    [Display("*PSC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command enables or disables the clearing of certain enable registers at power on.")]
+    [Display("*PSC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command enables or disables the clearing of certain enable registers at power on.")]
     public class CommonCommandsPsc : TestStep
     {
         #region Help Button
@@ -1406,7 +1406,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_PSC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_PSC.htm");
         }
         #endregion
         #region Instrument
@@ -1504,7 +1504,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsPud
-    [Display("*PUD", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Protected User Data command stores data unique to the device such as calibration date, usage time, environmental conditions, and inventory control numbers.  The Protected User Data query allows the programmer to retrieve the contents of the *PUD storage area.")]
+    [Display("*PUD", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Protected User Data command stores data unique to the device such as calibration date, usage time, environmental conditions, and inventory control numbers.  The Protected User Data query allows the programmer to retrieve the contents of the *PUD storage area.")]
     public class CommonCommandsPud : TestStep
     {
         #region Help Button
@@ -1512,7 +1512,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_PUD.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_PUD.htm");
         }
         #endregion
         #region Instrument
@@ -1591,7 +1591,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsRcl
-    [Display("*RCL", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command recalls the instrument state stored in the specified storage location.")]
+    [Display("*RCL", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command recalls the instrument state stored in the specified storage location.")]
     public class CommonCommandsRcl : TestStep
     {
         #region Help Button
@@ -1599,7 +1599,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_RCL.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_RCL.htm");
         }
         #endregion
         #region Instrument
@@ -1640,7 +1640,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsRdt
-    [Display("*RDT", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Resource Description Transfer command allows a Resource Description to be stored in a device.  The Resource Description Transfer query allows a Resource Description to be retrieved from a device. The Resource Description may be memory or in a read-write memory settable by the *RDT command.")]
+    [Display("*RDT", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Resource Description Transfer command allows a Resource Description to be stored in a device.  The Resource Description Transfer query allows a Resource Description to be retrieved from a device. The Resource Description may be memory or in a read-write memory settable by the *RDT command.")]
     public class CommonCommandsRdt : TestStep
     {
         #region Help Button
@@ -1648,7 +1648,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_RDT.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_RDT.htm");
         }
         #endregion
         #region Instrument
@@ -1727,7 +1727,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsRst
-    [Display("*RST", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command resets the multimeter to the Factory configuration.")]
+    [Display("*RST", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command resets the multimeter to the Factory configuration.")]
     public class CommonCommandsRst : TestStep
     {
         #region Help Button
@@ -1735,7 +1735,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_RST.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_RST.htm");
         }
         #endregion
         #region Instrument
@@ -1772,7 +1772,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsSav
-    [Display("*SAV", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command stores (saves) the current instrument state in the specified storage location.")]
+    [Display("*SAV", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command stores (saves) the current instrument state in the specified storage location.")]
     public class CommonCommandsSav : TestStep
     {
         #region Help Button
@@ -1780,7 +1780,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_SAV.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_SAV.htm");
         }
         #endregion
         #region Instrument
@@ -1821,7 +1821,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsSre
-    [Display("*SRE", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command enables bits in the enable register for the Status Byte Register group.")]
+    [Display("*SRE", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command enables bits in the enable register for the Status Byte Register group.")]
     public class CommonCommandsSre : TestStep
     {
         #region Help Button
@@ -1829,7 +1829,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_SRE.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_SRE.htm");
         }
         #endregion
         #region Instrument
@@ -1927,7 +1927,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsStb
-    [Display("*STB", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command queries the condition register for the Status Byte Register group.")]
+    [Display("*STB", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command queries the condition register for the Status Byte Register group.")]
     public class CommonCommandsStb : TestStep
     {
         #region Help Button
@@ -1935,7 +1935,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_STB_.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_STB_.htm");
         }
         #endregion
         #region Instrument
@@ -2021,7 +2021,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsTrg
-    [Display("*TRG", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command is used to trigger the instrument from the remote interface.")]
+    [Display("*TRG", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command is used to trigger the instrument from the remote interface.")]
     public class CommonCommandsTrg : TestStep
     {
         #region Help Button
@@ -2029,7 +2029,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_TRG.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_TRG.htm");
         }
         #endregion
         #region Instrument
@@ -2066,7 +2066,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsTst
-    [Display("*TST", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command performs a complete self-test of the instrument and returns a pass/fail indication.")]
+    [Display("*TST", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command performs a complete self-test of the instrument and returns a pass/fail indication.")]
     public class CommonCommandsTst : TestStep
     {
         #region Help Button
@@ -2074,7 +2074,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_TST_.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_TST_.htm");
         }
         #endregion
         #region Instrument
@@ -2160,7 +2160,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsWai
-    [Display("*WAI", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "This command configures the instrument's output buffer to wait for all pending operations to complete before executing any additional commands over the interface.")]
+    [Display("*WAI", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "This command configures the instrument's output buffer to wait for all pending operations to complete before executing any additional commands over the interface.")]
     public class CommonCommandsWai : TestStep
     {
         #region Help Button
@@ -2168,7 +2168,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_WAI.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_WAI.htm");
         }
         #endregion
         #region Instrument
@@ -2205,7 +2205,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsRmc
-    [Display("*RMC", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Remove Individual Macro command removes a single macro definition from the device.")]
+    [Display("*RMC", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Remove Individual Macro command removes a single macro definition from the device.")]
     public class CommonCommandsRmc : TestStep
     {
         #region Help Button
@@ -2213,7 +2213,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_RMC.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_RMC.htm");
         }
         #endregion
         #region Instrument
@@ -2254,7 +2254,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region CommonCommandsSds
-    [Display("*SDS", Groups: new[] { "Keysight Instrument Plugins", "Common Commands" }, Description: "The Save Default Device Settings command initializes the contents of a save/recall register.")]
+    [Display("*SDS", Groups: new[] { "Keysight Instrument Basic Control", "Common Commands" }, Description: "The Save Default Device Settings command initializes the contents of a save/recall register.")]
     public class CommonCommandsSds : TestStep
     {
         #region Help Button
@@ -2262,7 +2262,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\CommonCommands\Docs\IEEE-488_Commands\_SDS.htm");
+            CommonMethods.OpenHelpLink(@"\Common Commands\Docs\IEEE-488_Commands\_SDS.htm");
         }
         #endregion
         #region Instrument

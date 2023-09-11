@@ -33,7 +33,7 @@ namespace OpenTap.Plugins.PluginDevelopment
             bool notWindows = !RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             string filePath = packagesPrefix + helplink;
             filePath = notWindows ? filePath.Replace(@"\", "/") : filePath;
-            if (File.Exists(filePath)) { Log.CreateSource("HelpLink").Info("Opening HTML file from the location - " + filePath); Process p = notWindows ? Process.Start(new ProcessStartInfo { FileName = "/bin/bash", Arguments = $"-c \"xdg-open '{filePath}'\"", UseShellExecute = false }) : Process.Start(filePath); }
+            if (File.Exists(filePath)) { Log.CreateSource("HelpLink").Debug("Opening HTML file from the location - " + filePath); Process p = notWindows ? Process.Start(new ProcessStartInfo { FileName = "/bin/bash", Arguments = $"-c \"xdg-open '{filePath}'\"", UseShellExecute = false }) : Process.Start(filePath); }
             else { Log.CreateSource("HelpLink").Error("Helplink file could not be found at location - " + filePath); }
         }
     }
@@ -41,7 +41,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #region Node Classes
     #region APPLy Node Classes
     #region E364xdApplyStep
-    [Display("APPLy", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", }, Description: "This command is combination of VOLTage and CURRent commands.  Query the power supply’s present voltage and current setting values and returns a quoted string.")]
+    [Display("APPLy", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", }, Description: "This command is combination of VOLTage and CURRent commands.  Query the power supply’s present voltage and current setting values and returns a quoted string.")]
     public class E364xdApplyStep : TestStep
     {
         #region Help Button
@@ -49,7 +49,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_1.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_1.html");
         }
         #endregion
         #region Instrument
@@ -129,7 +129,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region CALibration Node Classes
     #region E364xdCalibrationCountStep
-    [Display("COUNt", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration" }, Description: "Query the power supply to determine the number of times it has been calibrated.")]
+    [Display("COUNt", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration" }, Description: "Query the power supply to determine the number of times it has been calibrated.")]
     public class E364xdCalibrationCountStep : TestStep
     {
         #region Help Button
@@ -137,7 +137,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_59.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_59.html");
         }
         #endregion
         #region Instrument
@@ -223,7 +223,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationCurrentDataStep
-    [Display("[DATA]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "CURRent" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
+    [Display("[DATA]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "CURRent" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
     public class E364xdCalibrationCurrentDataStep : TestStep
     {
         #region Help Button
@@ -231,7 +231,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_60.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_60.html");
         }
         #endregion
         #region Instrument
@@ -272,7 +272,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationCurrentLevelStep
-    [Display("LEVel", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "CURRent" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
+    [Display("LEVel", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "CURRent" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
     public class E364xdCalibrationCurrentLevelStep : TestStep
     {
         #region Help Button
@@ -280,7 +280,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_61.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_61.html");
         }
         #endregion
         #region Instrument
@@ -331,7 +331,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationSecureCodeStep
-    [Display("CODE", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "SECure" }, Description: "Enter a new security code.")]
+    [Display("CODE", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "SECure" }, Description: "Enter a new security code.")]
     public class E364xdCalibrationSecureCodeStep : TestStep
     {
         #region Help Button
@@ -339,7 +339,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_62.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_62.html");
         }
         #endregion
         #region Instrument
@@ -380,7 +380,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationSecureStateStep
-    [Display("STATe", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "SECure" }, Description: "Unsecure or secure the power supply with a security for calibration.  Query the secured state for calibration of the power supply.")]
+    [Display("STATe", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "SECure" }, Description: "Unsecure or secure the power supply with a security for calibration.  Query the secured state for calibration of the power supply.")]
     public class E364xdCalibrationSecureStateStep : TestStep
     {
         #region Help Button
@@ -388,7 +388,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_63.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_63.html");
         }
         #endregion
         #region Instrument
@@ -467,7 +467,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationStringStep
-    [Display("STRing", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration" }, Description: "Record calibration information about your power supply.  Query the calibration message and returns a quoted string.")]
+    [Display("STRing", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration" }, Description: "Record calibration information about your power supply.  Query the calibration message and returns a quoted string.")]
     public class E364xdCalibrationStringStep : TestStep
     {
         #region Help Button
@@ -475,7 +475,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_65.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_65.html");
         }
         #endregion
         #region Instrument
@@ -529,7 +529,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationVoltageDataStep
-    [Display("[DATA]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
+    [Display("[DATA]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
     public class E364xdCalibrationVoltageDataStep : TestStep
     {
         #region Help Button
@@ -537,7 +537,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_67.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_67.html");
         }
         #endregion
         #region Instrument
@@ -578,7 +578,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationVoltageLevelStep
-    [Display("LEVel", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
+    [Display("LEVel", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "This command can only be used after calibration is unsecured and the output state is ON.")]
     public class E364xdCalibrationVoltageLevelStep : TestStep
     {
         #region Help Button
@@ -586,7 +586,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_68.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_68.html");
         }
         #endregion
         #region Instrument
@@ -637,7 +637,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdCalibrationVoltageProtectionStep
-    [Display("PROTection", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "Calibrate the overvoltage protection circuit of the power supply.")]
+    [Display("PROTection", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "CALibration", "VOLTage" }, Description: "Calibrate the overvoltage protection circuit of the power supply.")]
     public class E364xdCalibrationVoltageProtectionStep : TestStep
     {
         #region Help Button
@@ -645,7 +645,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_69.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_69.html");
         }
         #endregion
         #region Instrument
@@ -684,7 +684,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region DISPlay Node Classes
     #region E364xdDisplayWindowModeStep
-    [Display("MODE", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]" }, Description: "Set the front-panel display mode of the power supply.  Query the state of the display mode.")]
+    [Display("MODE", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]" }, Description: "Set the front-panel display mode of the power supply.  Query the state of the display mode.")]
     public class E364xdDisplayWindowModeStep : TestStep
     {
         #region Help Button
@@ -692,7 +692,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_40.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_40.html");
         }
         #endregion
         #region Instrument
@@ -756,7 +756,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdDisplayWindowStateStep
-    [Display("[STATe]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]" }, Description: "Turn the front-panel display off or on.   Query the front-panel display setting.")]
+    [Display("[STATe]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]" }, Description: "Turn the front-panel display off or on.   Query the front-panel display setting.")]
     public class E364xdDisplayWindowStateStep : TestStep
     {
         #region Help Button
@@ -764,7 +764,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_39.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_39.html");
         }
         #endregion
         #region Instrument
@@ -839,7 +839,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdDisplayWindowTextClearStep
-    [Display("CLEar", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]", "TEXT" }, Description: "Clear the message displayed on the front panel.")]
+    [Display("CLEar", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]", "TEXT" }, Description: "Clear the message displayed on the front panel.")]
     public class E364xdDisplayWindowTextClearStep : TestStep
     {
         #region Help Button
@@ -847,7 +847,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_45.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_45.html");
         }
         #endregion
         #region Instrument
@@ -884,7 +884,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdDisplayWindowTextDataStep
-    [Display("[DATA]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]", "TEXT" }, Description: "Display a message on the front panel.   Query the message sent to the front panel and returns a quoted string.")]
+    [Display("[DATA]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "DISPlay", "[WINDow]", "TEXT" }, Description: "Display a message on the front panel.   Query the message sent to the front panel and returns a quoted string.")]
     public class E364xdDisplayWindowTextDataStep : TestStep
     {
         #region Help Button
@@ -892,7 +892,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_43.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_43.html");
         }
         #endregion
         #region Instrument
@@ -948,7 +948,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region INITiate Node Classes
     #region E364xdInitiateImmediateStep
-    [Display("[IMMediate]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "INITiate" }, Description: "Cause the trigger system to initiate.")]
+    [Display("[IMMediate]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "INITiate" }, Description: "Cause the trigger system to initiate.")]
     public class E364xdInitiateImmediateStep : TestStep
     {
         #region Help Button
@@ -956,7 +956,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_33.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_33.html");
         }
         #endregion
         #region Instrument
@@ -995,7 +995,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region INSTrument Node Classes
     #region E364xdInstrumentSelectStep
-    [Display("[SELect]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "INSTrument" }, Description: "Select the output to be programmed one of the two outputs by the output identifier.  Return the currently selected output by the INSTrument{:SELect] or INSTrument:NSELect command.")]
+    [Display("[SELect]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "INSTrument" }, Description: "Select the output to be programmed one of the two outputs by the output identifier.  Return the currently selected output by the INSTrument{:SELect] or INSTrument:NSELect command.")]
     public class E364xdInstrumentSelectStep : TestStep
     {
         #region Help Button
@@ -1003,7 +1003,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_9.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_9.html");
         }
         #endregion
         #region Instrument
@@ -1067,7 +1067,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdInstrumentNselectStep
-    [Display("NSELect", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "INSTrument" }, Description: "Select the output to be programmed one of the two outputs by a numeric value instead of the output identifier used in the INSTrument:NSELect or INSTrument[:SELect] command.  Return the currently selected output by the INSTrument[SELect]or INSTrument[SELect] command.")]
+    [Display("NSELect", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "INSTrument" }, Description: "Select the output to be programmed one of the two outputs by a numeric value instead of the output identifier used in the INSTrument:NSELect or INSTrument[:SELect] command.  Return the currently selected output by the INSTrument[SELect]or INSTrument[SELect] command.")]
     public class E364xdInstrumentNselectStep : TestStep
     {
         #region Help Button
@@ -1075,7 +1075,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_11.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_11.html");
         }
         #endregion
         #region Instrument
@@ -1173,7 +1173,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdInstrumentCoupleTriggerStep
-    [Display("[TRIGger]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "INSTrument", "COUPle" }, Description: "Enable or disable a coupling between two logical outputs of the power supply.  Query the output coupling state of the power supply.")]
+    [Display("[TRIGger]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "INSTrument", "COUPle" }, Description: "Enable or disable a coupling between two logical outputs of the power supply.  Query the output coupling state of the power supply.")]
     public class E364xdInstrumentCoupleTriggerStep : TestStep
     {
         #region Help Button
@@ -1181,7 +1181,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_13.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_13.html");
         }
         #endregion
         #region Instrument
@@ -1281,7 +1281,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region MEASure Node Classes
     #region E364xdMeasureScalarCurrentDcStep
-    [Display("[DC]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "MEASure", "[SCALar]", "CURRent" }, Description: "Query the current measured across the current sense resistor inside the power supply.")]
+    [Display("[DC]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "MEASure", "[SCALar]", "CURRent" }, Description: "Query the current measured across the current sense resistor inside the power supply.")]
     public class E364xdMeasureScalarCurrentDcStep : TestStep
     {
         #region Help Button
@@ -1289,7 +1289,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_15.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_15.html");
         }
         #endregion
         #region Instrument
@@ -1375,7 +1375,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdMeasureScalarVoltageDcStep
-    [Display("[DC]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "MEASure", "[SCALar]", "[VOLTage]" }, Description: "Query the voltage measured at the sense terminals of the power supply.")]
+    [Display("[DC]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "MEASure", "[SCALar]", "[VOLTage]" }, Description: "Query the voltage measured at the sense terminals of the power supply.")]
     public class E364xdMeasureScalarVoltageDcStep : TestStep
     {
         #region Help Button
@@ -1383,7 +1383,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_16.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_16.html");
         }
         #endregion
         #region Instrument
@@ -1471,7 +1471,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region MEMory Node Classes
     #region E364xdMemoryStateNameStep
-    [Display("NAME", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "MEMory", "STATe" }, Description: "Assign a name to the specified storage location.")]
+    [Display("NAME", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "MEMory", "STATe" }, Description: "Assign a name to the specified storage location.")]
     public class E364xdMemoryStateNameStep : TestStep
     {
         #region Help Button
@@ -1479,7 +1479,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_58.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_58.html");
         }
         #endregion
         #region Instrument
@@ -1543,7 +1543,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region OUTPut Node Classes
     #region E364xdOutputStateStep
-    [Display("[STATe]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "OUTPut" }, Description: "Enable or disable the outputs of the power supply.   Query the output state of the power supply.")]
+    [Display("[STATe]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "OUTPut" }, Description: "Enable or disable the outputs of the power supply.   Query the output state of the power supply.")]
     public class E364xdOutputStateStep : TestStep
     {
         #region Help Button
@@ -1551,7 +1551,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_46.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_46.html");
         }
         #endregion
         #region Instrument
@@ -1626,7 +1626,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdOutputRelayStateStep
-    [Display("[STATe]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "OUTPut", "RELay" }, Description: "Set the state of two TTL signals on the RS-232 connector pin 1 and pin 9. These signals are intended for use with an external relay and relay driver. At *RST, the OUTPUT:RELay state is OFF.    Query the state of the TTL relay logic signals.")]
+    [Display("[STATe]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "OUTPut", "RELay" }, Description: "Set the state of two TTL signals on the RS-232 connector pin 1 and pin 9. These signals are intended for use with an external relay and relay driver. At *RST, the OUTPUT:RELay state is OFF.    Query the state of the TTL relay logic signals.")]
     public class E364xdOutputRelayStateStep : TestStep
     {
         #region Help Button
@@ -1634,7 +1634,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_48.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_48.html");
         }
         #endregion
         #region Instrument
@@ -1709,7 +1709,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdOutputTrackStateStep
-    [Display("[STATe]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "OUTPut", "TRACk" }, Description: "Enable or disable the power supply to operate in the track mode.   Query the tracking mode state of the power supply.")]
+    [Display("[STATe]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "OUTPut", "TRACk" }, Description: "Enable or disable the power supply to operate in the track mode.   Query the tracking mode state of the power supply.")]
     public class E364xdOutputTrackStateStep : TestStep
     {
         #region Help Button
@@ -1717,7 +1717,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_17.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_17.html");
         }
         #endregion
         #region Instrument
@@ -1794,7 +1794,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region SOURce Node Classes
     #region E364xdSourceCurrentLevelImmediateAmplitudeStep
-    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "[IMMediate]" }, Description: "Program the immediate current level of the power supply.   Return the presently programmed current level of the power supply.")]
+    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "[IMMediate]" }, Description: "Program the immediate current level of the power supply.   Return the presently programmed current level of the power supply.")]
     public class E364xdSourceCurrentLevelImmediateAmplitudeStep : TestStep
     {
         #region Help Button
@@ -1802,7 +1802,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_3.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_3.html");
         }
         #endregion
         #region Instrument
@@ -1924,7 +1924,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceCurrentLevelImmediateStepIncrementStep
-    [Display("[INCRement]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "[IMMediate]", "STEP" }, Description: "Set the step size for current programming with the CURRent UPand CURRentDOWN commands.   Return the value of the step size currently specified.")]
+    [Display("[INCRement]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "[IMMediate]", "STEP" }, Description: "Set the step size for current programming with the CURRent UPand CURRentDOWN commands.   Return the value of the step size currently specified.")]
     public class E364xdSourceCurrentLevelImmediateStepIncrementStep : TestStep
     {
         #region Help Button
@@ -1932,7 +1932,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_5.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_5.html");
         }
         #endregion
         #region Instrument
@@ -2054,7 +2054,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceCurrentLevelTriggeredAmplitudeStep
-    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "TRIGgered" }, Description: "Program the pending triggered current level.   Query the triggered current level presently programmed.")]
+    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "CURRent", "[LEVel]", "TRIGgered" }, Description: "Program the pending triggered current level.   Query the triggered current level presently programmed.")]
     public class E364xdSourceCurrentLevelTriggeredAmplitudeStep : TestStep
     {
         #region Help Button
@@ -2062,7 +2062,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_7.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_7.html");
         }
         #endregion
         #region Instrument
@@ -2184,7 +2184,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageRangeStep
-    [Display("RANGe", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage" }, Description: "Select an output range to be programmed by the identifier.  Query the currently selected range.")]
+    [Display("RANGe", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage" }, Description: "Select an output range to be programmed by the identifier.  Query the currently selected range.")]
     public class E364xdSourceVoltageRangeStep : TestStep
     {
         #region Help Button
@@ -2192,7 +2192,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_31.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_31.html");
         }
         #endregion
         #region Instrument
@@ -2256,7 +2256,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageProtectionClearStep
-    [Display("CLEar", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Cause the overvoltage protection circuit to be cleared.")]
+    [Display("CLEar", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Cause the overvoltage protection circuit to be cleared.")]
     public class E364xdSourceVoltageProtectionClearStep : TestStep
     {
         #region Help Button
@@ -2264,7 +2264,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_30.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_30.html");
         }
         #endregion
         #region Instrument
@@ -2301,7 +2301,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageProtectionLevelStep
-    [Display("[LEVel]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Set the voltage level at which the overvoltage protection (OVP) circuit will trip.   Query the overvoltage protection trip level presently programmed.")]
+    [Display("[LEVel]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Set the voltage level at which the overvoltage protection (OVP) circuit will trip.   Query the overvoltage protection trip level presently programmed.")]
     public class E364xdSourceVoltageProtectionLevelStep : TestStep
     {
         #region Help Button
@@ -2309,7 +2309,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_25.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_25.html");
         }
         #endregion
         #region Instrument
@@ -2431,7 +2431,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageProtectionStateStep
-    [Display("STATe", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Enable or disable the overvoltage protection function.  Query the state of the overvoltage protection function.")]
+    [Display("STATe", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Enable or disable the overvoltage protection function.  Query the state of the overvoltage protection function.")]
     public class E364xdSourceVoltageProtectionStateStep : TestStep
     {
         #region Help Button
@@ -2439,7 +2439,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_27.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_27.html");
         }
         #endregion
         #region Instrument
@@ -2514,7 +2514,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageProtectionTrippedStep
-    [Display("TRIPped", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Return a ‘‘1’’ if the overvoltage protection circuit is tripped and not cleared or a ‘‘0’’ if not tripped.")]
+    [Display("TRIPped", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "PROTection" }, Description: "Return a ‘‘1’’ if the overvoltage protection circuit is tripped and not cleared or a ‘‘0’’ if not tripped.")]
     public class E364xdSourceVoltageProtectionTrippedStep : TestStep
     {
         #region Help Button
@@ -2522,7 +2522,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_29.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_29.html");
         }
         #endregion
         #region Instrument
@@ -2585,7 +2585,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageLevelImmediateAmplitudeStep
-    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "[IMMediate]" }, Description: "Program the immediate voltage level of the power supply.   Query the presently programmed voltage level of the power supply.")]
+    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "[IMMediate]" }, Description: "Program the immediate voltage level of the power supply.   Query the presently programmed voltage level of the power supply.")]
     public class E364xdSourceVoltageLevelImmediateAmplitudeStep : TestStep
     {
         #region Help Button
@@ -2593,7 +2593,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_19.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_19.html");
         }
         #endregion
         #region Instrument
@@ -2715,7 +2715,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageLevelImmediateStepIncrementStep
-    [Display("[INCRement]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "[IMMediate]", "STEP" }, Description: "Set the step size for voltage programming with the VOLT UP and VOLT DOWN commands.  Return the value of the step size currently specified.")]
+    [Display("[INCRement]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "[IMMediate]", "STEP" }, Description: "Set the step size for voltage programming with the VOLT UP and VOLT DOWN commands.  Return the value of the step size currently specified.")]
     public class E364xdSourceVoltageLevelImmediateStepIncrementStep : TestStep
     {
         #region Help Button
@@ -2723,7 +2723,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_21.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_21.html");
         }
         #endregion
         #region Instrument
@@ -2845,7 +2845,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSourceVoltageLevelTriggeredAmplitudeStep
-    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "TRIGgered" }, Description: "Program the pending triggered voltage level.   Query the triggered voltage level presently programmed.")]
+    [Display("[AMPLitude]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "[SOURce]", "VOLTage", "[LEVel]", "TRIGgered" }, Description: "Program the pending triggered voltage level.   Query the triggered voltage level presently programmed.")]
     public class E364xdSourceVoltageLevelTriggeredAmplitudeStep : TestStep
     {
         #region Help Button
@@ -2853,7 +2853,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_23.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_23.html");
         }
         #endregion
         #region Instrument
@@ -2977,7 +2977,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region STATus Node Classes
     #region E364xdStatusQuestionableEnableStep
-    [Display("ENABle", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable" }, Description: "Enable bits in the Questionable Status Enable register.   Query the Questionable Status Enable register.")]
+    [Display("ENABle", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable" }, Description: "Enable bits in the Questionable Status Enable register.   Query the Questionable Status Enable register.")]
     public class E364xdStatusQuestionableEnableStep : TestStep
     {
         #region Help Button
@@ -2985,7 +2985,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_75.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_75.html");
         }
         #endregion
         #region Instrument
@@ -3083,7 +3083,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableEventStep
-    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable" }, Description: "Query the Questionable Status Event register.")]
+    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable" }, Description: "Query the Questionable Status Event register.")]
     public class E364xdStatusQuestionableEventStep : TestStep
     {
         #region Help Button
@@ -3091,7 +3091,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_74.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_74.html");
         }
         #endregion
         #region Instrument
@@ -3177,7 +3177,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableInstrumentEventStep
-    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument" }, Description: "Query the Questionable Instrument Event register.")]
+    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument" }, Description: "Query the Questionable Instrument Event register.")]
     public class E364xdStatusQuestionableInstrumentEventStep : TestStep
     {
         #region Help Button
@@ -3185,7 +3185,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_77.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_77.html");
         }
         #endregion
         #region Instrument
@@ -3271,7 +3271,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableInstrumentEnableStep
-    [Display("ENABle", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument" }, Description: "Set the value of the Questionable Instrument Enable register.  Return the value of the Questionable Instrument Enable register.")]
+    [Display("ENABle", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument" }, Description: "Set the value of the Questionable Instrument Enable register.  Return the value of the Questionable Instrument Enable register.")]
     public class E364xdStatusQuestionableInstrumentEnableStep : TestStep
     {
         #region Help Button
@@ -3279,7 +3279,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_78.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_78.html");
         }
         #endregion
         #region Instrument
@@ -3377,7 +3377,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableInstrumentIsummaryConditionStep
-    [Display("CONDition", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Return the CV or CC condition of the specified instrument.")]
+    [Display("CONDition", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Return the CV or CC condition of the specified instrument.")]
     public class E364xdStatusQuestionableInstrumentIsummaryConditionStep : TestStep
     {
         #region Help Button
@@ -3385,7 +3385,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_81.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_81.html");
         }
         #endregion
         #region Instrument
@@ -3473,7 +3473,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableInstrumentIsummaryEventStep
-    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Return the value of the Questionable Instrument Isummary Event register for a specific output of the two-output power supply.")]
+    [Display("[EVENt]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Return the value of the Questionable Instrument Isummary Event register for a specific output of the two-output power supply.")]
     public class E364xdStatusQuestionableInstrumentIsummaryEventStep : TestStep
     {
         #region Help Button
@@ -3481,7 +3481,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_80.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_80.html");
         }
         #endregion
         #region Instrument
@@ -3569,7 +3569,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdStatusQuestionableInstrumentIsummaryEnableStep
-    [Display("ENABle", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Set the value of the Questionable Instrument Isummary Enable register for a specific output of the two-output power supply.   This query returns the value of the Questionable Instrument Isummary Enable register.")]
+    [Display("ENABle", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "STATus", "QUEStionable", "INSTrument", "ISUMmary" }, Description: "Set the value of the Questionable Instrument Isummary Enable register for a specific output of the two-output power supply.   This query returns the value of the Questionable Instrument Isummary Enable register.")]
     public class E364xdStatusQuestionableInstrumentIsummaryEnableStep : TestStep
     {
         #region Help Button
@@ -3577,7 +3577,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_82.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_82.html");
         }
         #endregion
         #region Instrument
@@ -3679,7 +3679,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region SYSTem Node Classes
     #region E364xdSystemBeeperImmediateStep
-    [Display("[IMMediate]", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem", "BEEPer" }, Description: "Issue a single beep immediately.")]
+    [Display("[IMMediate]", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem", "BEEPer" }, Description: "Issue a single beep immediately.")]
     public class E364xdSystemBeeperImmediateStep : TestStep
     {
         #region Help Button
@@ -3687,7 +3687,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_50.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_50.html");
         }
         #endregion
         #region Instrument
@@ -3724,7 +3724,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemErrorStep
-    [Display("ERRor", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Query the power supply’s error queue.")]
+    [Display("ERRor", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Query the power supply’s error queue.")]
     public class E364xdSystemErrorStep : TestStep
     {
         #region Help Button
@@ -3732,7 +3732,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_51.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_51.html");
         }
         #endregion
         #region Instrument
@@ -3779,7 +3779,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemInterfaceStep
-    [Display("INTerface", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Select the remote interface.")]
+    [Display("INTerface", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Select the remote interface.")]
     public class E364xdSystemInterfaceStep : TestStep
     {
         #region Help Button
@@ -3787,7 +3787,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_70.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_70.html");
         }
         #endregion
         #region Instrument
@@ -3838,7 +3838,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemLocalStep
-    [Display("LOCal", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the local mode during RS-232 operation.")]
+    [Display("LOCal", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the local mode during RS-232 operation.")]
     public class E364xdSystemLocalStep : TestStep
     {
         #region Help Button
@@ -3846,7 +3846,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_71.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_71.html");
         }
         #endregion
         #region Instrument
@@ -3883,7 +3883,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemRemoteStep
-    [Display("REMote", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the remote mode for RS-232 operation.")]
+    [Display("REMote", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the remote mode for RS-232 operation.")]
     public class E364xdSystemRemoteStep : TestStep
     {
         #region Help Button
@@ -3891,7 +3891,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_72.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_72.html");
         }
         #endregion
         #region Instrument
@@ -3928,7 +3928,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemRwlockStep
-    [Display("RWLock", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the remote mode for RS-232 operation.")]
+    [Display("RWLock", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Place the power supply in the remote mode for RS-232 operation.")]
     public class E364xdSystemRwlockStep : TestStep
     {
         #region Help Button
@@ -3936,7 +3936,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_73.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_73.html");
         }
         #endregion
         #region Instrument
@@ -3973,7 +3973,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdSystemVersionStep
-    [Display("VERSion", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Query the power supply to determine the present SCPI version.")]
+    [Display("VERSion", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "SYSTem" }, Description: "Query the power supply to determine the present SCPI version.")]
     public class E364xdSystemVersionStep : TestStep
     {
         #region Help Button
@@ -3981,7 +3981,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_52.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_52.html");
         }
         #endregion
         #region Instrument
@@ -4025,7 +4025,7 @@ namespace OpenTap.Plugins.PluginDevelopment
     #endregion
     #region TRIGger Node Classes
     #region E364xdTriggerSequenceDelayStep
-    [Display("DELay", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "TRIGger", "[SEQuence]" }, Description: "Set the time delay between the detection of an event on the specified trigger source and the start of any corresponding trigger action on the power supply output.  Query the trigger delay.")]
+    [Display("DELay", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "TRIGger", "[SEQuence]" }, Description: "Set the time delay between the detection of an event on the specified trigger source and the start of any corresponding trigger action on the power supply output.  Query the trigger delay.")]
     public class E364xdTriggerSequenceDelayStep : TestStep
     {
         #region Help Button
@@ -4033,7 +4033,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_34.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_34.html");
         }
         #endregion
         #region Instrument
@@ -4155,7 +4155,7 @@ namespace OpenTap.Plugins.PluginDevelopment
 
     #endregion
     #region E364xdTriggerSequenceSourceStep
-    [Display("SOURce", Groups: new[] { "Keysight Instrument Plugins", "E364x Dual Output DC Power Supplies", "TRIGger", "[SEQuence]" }, Description: "Select the source from which the power supply will accept a trigger.  Query the present trigger source.")]
+    [Display("SOURce", Groups: new[] { "Keysight Instrument Basic Control", "E364x Dual Output DC Power Supplies", "TRIGger", "[SEQuence]" }, Description: "Select the source from which the power supply will accept a trigger.  Query the present trigger source.")]
     public class E364xdTriggerSequenceSourceStep : TestStep
     {
         #region Help Button
@@ -4163,7 +4163,7 @@ namespace OpenTap.Plugins.PluginDevelopment
         [Browsable(true)]
         public void OpenHelpLink()
         {
-            CommonMethods.OpenHelpLink(@"\E364xD\Docs\e364x_36.html");
+            CommonMethods.OpenHelpLink(@"\E364x Dual Output DC Power Supplies\Docs\e364x_36.html");
         }
         #endregion
         #region Instrument
