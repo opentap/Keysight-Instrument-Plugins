@@ -1,4 +1,4 @@
-# Keysight Instrument Plugins
+# Keysight Instrument Basic Control Plugins
 Repository containing source code of cross-platform OpenTAP plugins for multiple Keysight Instruments.
 These plugins make it possible for Keysight Test Automation and OpenTAP users to automate creating measurements' setups, performing measurement sweeps, collecting data and publishing results without any external dependency.
 
